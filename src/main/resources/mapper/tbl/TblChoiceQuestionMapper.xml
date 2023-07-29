@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecareer.modules.tbl.mapper.TblChoiceQuestionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ecareer.modules.tbl.model.TblChoiceQuestion">
+        <id column="id" property="id" />
+        <result column="type_id" property="typeId" />
+        <result column="content" property="content" />
+        <result column="option1" property="option1" />
+        <result column="option2" property="option2" />
+        <result column="option3" property="option3" />
+        <result column="option4" property="option4" />
+        <result column="answer" property="answer" />
+        <result column="analysis" property="analysis" />
+    </resultMap>
+
+</mapper>

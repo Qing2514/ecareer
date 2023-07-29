@@ -1,13 +1,13 @@
 server:
-  port: 8080
+  port: 9886
 
 spring:
   application:
     name: ecareer
   profiles:
     active: @profile.active@
-#  main:
-#    allow-circular-references: true
+  main:
+    allow-circular-references: true
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -52,3 +52,4 @@ secure:
       - /admin/register
       - /admin/info
       - /admin/logout
+      - /**
