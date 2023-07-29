@@ -8,4 +8,6 @@ RUN echo "Asia/shanghai" > /etc/timezone;
 ENV LANG C.UTF-8
 
 # 指定维护者的名字
-MAINTAINER mjm
+MAINTAINER zjut
+
+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
