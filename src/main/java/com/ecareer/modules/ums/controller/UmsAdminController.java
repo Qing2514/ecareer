@@ -111,10 +111,9 @@ public class UmsAdminController {
     }
 
     @ApiOperation(value = "登出功能")
-    @RequestMapping(value = "/logout/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult logout(@PathVariable Long id) {
-        adminService.logout(id);
+    public CommonResult logout() {
         return CommonResult.success(null);
     }
 

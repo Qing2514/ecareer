@@ -9,5 +9,3 @@ ENV LANG C.UTF-8
 
 # 指定维护者的名字
 MAINTAINER zjut
-
-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

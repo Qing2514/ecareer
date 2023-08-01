@@ -132,12 +132,6 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
         return token;
     }
 
-    @Override
-    public void logout(Long id) {
-        getCacheService().delAdmin(id);
-        getCacheService().delResourceList(id);
-    }
-
     /**
      * 添加登录记录
      *

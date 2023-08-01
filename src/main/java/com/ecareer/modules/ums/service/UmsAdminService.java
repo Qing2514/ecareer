@@ -43,13 +43,6 @@ public interface UmsAdminService extends IService<UmsAdmin> {
     String login(String username, String password);
 
     /**
-     * 登出功能
-     *
-     * @param id 用户ID
-     */
-    void logout(Long id);
-
-    /**
      * 刷新token的功能
      *
      * @param oldToken 旧的token
