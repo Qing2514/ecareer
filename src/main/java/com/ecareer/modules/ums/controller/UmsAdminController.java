@@ -60,7 +60,7 @@ public class UmsAdminController {
         return CommonResult.success(umsAdmin);
     }
 
-    @ApiOperation(value = "登录以后返回token")
+    @ApiOperation(value = "登录以后返回token和用户信息")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult login(@Validated @RequestBody UmsAdminLoginParam umsAdminLoginParam) {
@@ -68,9 +68,11 @@ public class UmsAdminController {
         if (token == null) {
             return CommonResult.validateFailed("用户名或密码错误");
         }
-        Map<String, String> tokenMap = new HashMap<>();
+        UmsAdmin user = adminService.getAdminByUsername(umsAdminLoginParam.getUsername());
+        Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
+        tokenMap.put("user", user);
         return CommonResult.success(tokenMap);
     }
 
