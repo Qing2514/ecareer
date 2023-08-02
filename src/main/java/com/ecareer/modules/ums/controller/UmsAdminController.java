@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +61,7 @@ public class UmsAdminController {
         return CommonResult.success(umsAdmin);
     }
 
-    @ApiOperation(value = "登录以后返回token和用户信息")
+    @ApiOperation(value = "登录以后返回token")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult login(@Validated @RequestBody UmsAdminLoginParam umsAdminLoginParam) {
@@ -68,11 +69,9 @@ public class UmsAdminController {
         if (token == null) {
             return CommonResult.validateFailed("用户名或密码错误");
         }
-        UmsAdmin user = adminService.getAdminByUsername(umsAdminLoginParam.getUsername());
         Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
-        tokenMap.put("user", user);
         return CommonResult.success(tokenMap);
     }
 
@@ -129,19 +128,69 @@ public class UmsAdminController {
         return CommonResult.success(CommonPage.restPage(adminList));
     }
 
-    @ApiOperation("获取指定用户信息")
-    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+    @ApiOperation("获取当前用户信息")
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult<UmsAdmin> getItem(@PathVariable Long id) {
+    public CommonResult<UmsAdmin> getItem(Principal principal) {
+        if (principal == null) {
+            return CommonResult.unauthorized(null);
+        }
+        String username = principal.getName();
+        UmsAdmin admin = adminService.getAdminByUsername(username);
+        return CommonResult.success(admin);
+    }
+
+    @ApiOperation("修改当前用户信息")
+    @RequestMapping(value = "/user", method = RequestMethod.PUT)
+    @ResponseBody
+    public CommonResult updateBasicInfo(@Validated @RequestBody AdminBasicInfoParam adminBasicInfoParam,
+                                        Principal principal) {
+        if (principal == null) {
+            return CommonResult.unauthorized(null);
+        }
+        String username = principal.getName();
+        int status = adminService.updateBasicInfo(username, adminBasicInfoParam);
+        if (status > 0) {
+            return CommonResult.success();
+        } else if (status == -1) {
+            return CommonResult.failed("用户不存在");
+        } else if (status == -2) {
+            return CommonResult.failed("所属部门不存在");
+        } else if (status == -3) {
+            return CommonResult.failed("所属岗位不存在");
+        } else {
+            return CommonResult.failed();
+        }
+    }
+
+    @ApiOperation("删除当前用户信息")
+    @RequestMapping(value = "/user", method = RequestMethod.DELETE)
+    @ResponseBody
+    public CommonResult delete(Principal principal) {
+        if (principal == null) {
+            return CommonResult.unauthorized(null);
+        }
+        String username = principal.getName();
+        boolean success = adminService.deleteByUsername(username);
+        if (success) {
+            return CommonResult.success(null);
+        }
+        return CommonResult.failed();
+    }
+
+    @ApiOperation("获取指定用户信息")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<UmsAdmin> getUser(@PathVariable Long id) {
         UmsAdmin admin = adminService.getAdminById(id);
         return CommonResult.success(admin);
     }
 
     @ApiOperation("修改指定用户信息")
-    @RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "", method = RequestMethod.PUT)
     @ResponseBody
-    public CommonResult update(@PathVariable Long id, @RequestBody UmsAdmin admin) {
-        boolean success = adminService.update(id, admin);
+    public CommonResult update(@RequestBody UmsAdmin admin) {
+        boolean success = adminService.update(admin);
         if (success) {
             return CommonResult.success(null);
         }
@@ -168,56 +217,11 @@ public class UmsAdminController {
         }
     }
 
-    @ApiOperation("修改指定用户基础资料")
-    @RequestMapping(value = "/user/updateBasicInfo", method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult updateBasicInfo(@Validated @RequestBody AdminBasicInfoParam adminBasicInfoParam) {
-        int status = adminService.updateBasicInfo(adminBasicInfoParam);
-        if (status > 0) {
-            return CommonResult.success();
-        } else if (status == -1) {
-            return CommonResult.failed("用户不存在");
-        } else if (status == -2) {
-            return CommonResult.failed("姓名未填");
-        } else if (status == -3) {
-            return CommonResult.failed("性别未填");
-        } else if (status == -4) {
-            return CommonResult.failed("教育背景未填");
-        } else if (status == -5) {
-            return CommonResult.failed("工作经历未填");
-        } else if (status == -6) {
-            return CommonResult.failed("所属部门未填");
-        } else if (status == -7) {
-            return CommonResult.failed("所属部门不存在");
-        } else if (status == -8) {
-            return CommonResult.failed("所属岗位未填");
-        } else if (status == -9) {
-            return CommonResult.failed("所属岗位不存在");
-        } else if (status == -10) {
-            return CommonResult.failed("用户ID未填");
-        } else {
-            return CommonResult.failed();
-        }
-    }
-
-    @ApiOperation("移除指定用户信息")
+    @ApiOperation("删除指定用户信息")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public CommonResult remove(@PathVariable Long id) {
         boolean success = adminService.delete(id);
-        if (success) {
-            return CommonResult.success(null);
-        }
-        return CommonResult.failed();
-    }
-
-    @ApiOperation("删除指定用户信息")
-    @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public CommonResult delete(@PathVariable Long id) {
-        UmsAdmin umsAdmin = new UmsAdmin();
-        umsAdmin.setDeleted(1);
-        boolean success = adminService.update(id, umsAdmin);
         if (success) {
             return CommonResult.success(null);
         }

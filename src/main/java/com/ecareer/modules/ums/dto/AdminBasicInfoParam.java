@@ -15,10 +15,6 @@ import javax.validation.constraints.NotNull;
 @Data
 public class AdminBasicInfoParam {
 
-    @NotNull
-    @ApiModelProperty(value = "用户ID", required = true)
-    private Long id;
-
     @NotEmpty
     @ApiModelProperty(value = "姓名", required = true)
     private String name;

@@ -18,6 +18,7 @@ import java.util.List;
  * Created by macro on 2018/4/26.
  */
 public interface UmsAdminService extends IService<UmsAdmin> {
+
     /**
      * 根据用户ID获取后台用户
      */
@@ -57,12 +58,17 @@ public interface UmsAdminService extends IService<UmsAdmin> {
     /**
      * 修改指定用户信息
      */
-    boolean update(Long id, UmsAdmin admin);
+    boolean update(UmsAdmin admin);
 
     /**
      * 删除指定用户
      */
     boolean delete(Long id);
+
+    /**
+     * 根据用户名删除指定用户
+     */
+    boolean deleteByUsername(String username);
 
     /**
      * 修改用户角色关系
@@ -88,7 +94,7 @@ public interface UmsAdminService extends IService<UmsAdmin> {
     /**
      * 修改基础资料
      */
-    int updateBasicInfo(AdminBasicInfoParam adminBasicInfoParam);
+    int updateBasicInfo(String username, AdminBasicInfoParam adminBasicInfoParam);
 
     /**
      * 获取用户信息

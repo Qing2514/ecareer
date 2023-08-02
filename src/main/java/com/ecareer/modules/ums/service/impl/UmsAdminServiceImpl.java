@@ -181,9 +181,8 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
     }
 
     @Override
-    public boolean update(Long id, UmsAdmin admin) {
-        admin.setId(id);
-        UmsAdmin rawAdmin = getById(id);
+    public boolean update(UmsAdmin admin) {
+        UmsAdmin rawAdmin = getAdminByUsername(admin.getUsername());
         if (rawAdmin.getPassword().equals(admin.getPassword())) {
             //与原加密密码相同的不需要修改
             admin.setPassword(null);
@@ -195,9 +194,9 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
                 admin.setPassword(passwordEncoder.encode(admin.getPassword()));
             }
         }
-        boolean success = updateById(admin);
-        getCacheService().delAdmin(id);
-        return success;
+        admin.setId(rawAdmin.getId());
+        getCacheService().delAdmin(admin.getId());
+        return updateById(admin);
     }
 
     @Override
@@ -205,6 +204,15 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
         getCacheService().delAdmin(id);
         boolean success = removeById(id);
         getCacheService().delResourceList(id);
+        return success;
+    }
+
+    @Override
+    public boolean deleteByUsername(String username) {
+        UmsAdmin admin = getAdminByUsername(username);
+        getCacheService().delAdmin(admin.getId());
+        boolean success = removeById(admin.getId());
+        getCacheService().delResourceList(admin.getId());
         return success;
     }
 
@@ -273,41 +281,20 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
     }
 
     @Override
-    public int updateBasicInfo(AdminBasicInfoParam adminBasicInfoParam) {
+    public int updateBasicInfo(String username, AdminBasicInfoParam adminBasicInfoParam) {
         LambdaQueryWrapper<UmsAdmin> adminWrapper = new LambdaQueryWrapper<>();
-        adminWrapper.eq(UmsAdmin::getId, adminBasicInfoParam.getId());
+        adminWrapper.eq(UmsAdmin::getUsername, username);
         UmsAdmin admin = getOne(adminWrapper);
         if (admin == null) {
             return -1;
         }
-        if (StrUtil.isEmpty(adminBasicInfoParam.getName())) {
-            return -2;
-        }
-        if (adminBasicInfoParam.getSex() == null) {
-            return -3;
-        }
-        if (StrUtil.isEmpty(adminBasicInfoParam.getBackground())) {
-            return -4;
-        }
-        if (StrUtil.isEmpty(adminBasicInfoParam.getExperience())) {
-            return -5;
-        }
-        if (adminBasicInfoParam.getDepartmentId() == null) {
-            return -6;
-        }
         UmsDepartment department = departmentService.getDepartmentById(adminBasicInfoParam.getDepartmentId());
         if (department == null) {
-            return -7;
-        }
-        if (adminBasicInfoParam.getPostId() == null) {
-            return -8;
+            return -2;
         }
         UmsPost post = postService.getPostById(adminBasicInfoParam.getPostId());
         if (post == null) {
-            return -9;
-        }
-        if (adminBasicInfoParam.getId() == null) {
-            return -10;
+            return -3;
         }
         BeanUtils.copyProperties(adminBasicInfoParam, admin);
         updateById(admin);
