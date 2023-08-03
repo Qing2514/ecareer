@@ -53,9 +53,9 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
     @Autowired
     private UmsAdminLoginLogMapper loginLogMapper;
     @Autowired
-    private UmsAdminRoleRelationService adminRoleRelationService;
-    @Autowired
     private UmsRoleMapper roleMapper;
+    @Autowired
+    private UmsAdminRoleRelationService adminRoleRelationService;
     @Autowired
     private UmsResourceMapper resourceMapper;
     @Autowired
@@ -77,7 +77,7 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
             return admin;
         }
         QueryWrapper<UmsAdmin> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(UmsAdmin::getUsername, username);
+        wrapper.lambda().eq(UmsAdmin::getUsername, username).eq(UmsAdmin::getDeleted, 0);
         List<UmsAdmin> adminList = list(wrapper);
         if (adminList != null && adminList.size() > 0) {
             admin = adminList.get(0);
@@ -105,6 +105,14 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
         String encodePassword = passwordEncoder.encode(umsAdmin.getPassword());
         umsAdmin.setPassword(encodePassword);
         baseMapper.insert(umsAdmin);
+        Long adminId = getAdminByUsername(umsAdminLoginParam.getUsername()).getId();
+        UmsAdminRoleRelation adminRoleRelation = UmsAdminRoleRelation.builder()
+                .adminId(adminId)
+                .roleId(3L)
+                .createTime(new Date())
+                .deleted(0)
+                .build();
+        adminRoleRelationService.save(adminRoleRelation);
         return umsAdmin;
     }
 
@@ -227,9 +235,10 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
         if (!CollectionUtils.isEmpty(roleIds)) {
             List<UmsAdminRoleRelation> list = new ArrayList<>();
             for (Long roleId : roleIds) {
-                UmsAdminRoleRelation roleRelation = new UmsAdminRoleRelation();
-                roleRelation.setAdminId(adminId);
-                roleRelation.setRoleId(roleId);
+                UmsAdminRoleRelation roleRelation = UmsAdminRoleRelation.builder()
+                        .adminId(adminId)
+                        .roleId(roleId)
+                        .build();
                 list.add(roleRelation);
             }
             adminRoleRelationService.saveBatch(list);
@@ -298,6 +307,7 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
         }
         BeanUtils.copyProperties(adminBasicInfoParam, admin);
         updateById(admin);
+        getCacheService().delAdmin(admin.getId());
         department.setAdminNumber(department.getAdminNumber() + 1);
         departmentService.updateDepartment(department);
         post.setAdminNumber(post.getAdminNumber() + 1);
