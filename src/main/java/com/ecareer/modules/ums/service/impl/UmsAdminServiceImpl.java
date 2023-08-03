@@ -168,6 +168,8 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
         QueryWrapper<UmsAdmin> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(UmsAdmin::getUsername, username);
         update(record, wrapper);
+        Long adminId = getOne(wrapper).getId();
+        getCacheService().delAdmin(adminId);
     }
 
     @Override
@@ -292,12 +294,13 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
     @Override
     public int updateBasicInfo(String username, AdminBasicInfoParam adminBasicInfoParam) {
         LambdaQueryWrapper<UmsAdmin> adminWrapper = new LambdaQueryWrapper<>();
-        adminWrapper.eq(UmsAdmin::getUsername, username);
+        adminWrapper.eq(UmsAdmin::getUsername, username).eq(UmsAdmin::getDeleted, 0);
         UmsAdmin admin = getOne(adminWrapper);
         if (admin == null) {
             return -1;
         }
         UmsDepartment department = departmentService.getDepartmentById(adminBasicInfoParam.getDepartmentId());
+        LOGGER.info(department.getId().toString());
         if (department == null) {
             return -2;
         }
