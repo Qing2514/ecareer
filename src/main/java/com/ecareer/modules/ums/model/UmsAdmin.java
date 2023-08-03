@@ -63,7 +63,7 @@ public class UmsAdmin implements Serializable {
     private String introduction;
 
     @ApiModelProperty(value = "所属部门ID")
-    private Integer departmentId;
+    private Long departmentId;
 
     @ApiModelProperty(value = "备注信息")
     private String note;
