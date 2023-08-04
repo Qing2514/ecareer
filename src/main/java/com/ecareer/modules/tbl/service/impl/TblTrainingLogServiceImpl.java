@@ -49,6 +49,12 @@ public class TblTrainingLogServiceImpl extends ServiceImpl<TblTrainingLogMapper,
     }
 
     @Override
+    public List<TrainingLogVO> getTrainingLogByUsername(String username) {
+        UmsAdmin admin = adminService.getAdminByUsername(username);
+        return getTrainingLogByUserId(admin.getId());
+    }
+
+    @Override
     public Page<TrainingLogVO> getPage(Long adminId, Integer pageSize, Integer pageNum) {
         Page<TrainingLogVO> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<TblTrainingLog> wrapper = new LambdaQueryWrapper<>();
@@ -63,8 +69,8 @@ public class TblTrainingLogServiceImpl extends ServiceImpl<TblTrainingLogMapper,
     }
 
     @Override
-    public int addTrainingLog(TblTrainingLogParam trainingLogParam) {
-        UmsAdmin user = adminService.getAdminById(trainingLogParam.getAdminId());
+    public int addTrainingLog(String username, TblTrainingLogParam trainingLogParam) {
+        UmsAdmin user = adminService.getAdminByUsername(username);
         if (user == null) {
             return -1;
         }
@@ -90,13 +96,26 @@ public class TblTrainingLogServiceImpl extends ServiceImpl<TblTrainingLogMapper,
     }
 
     @Override
-    public int deleteTrainingLog(Long adminId, Long materialId) {
-        LambdaQueryWrapper<TblTrainingLog> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(TblTrainingLog::getAdminId, adminId).eq(TblTrainingLog::getMaterialId, materialId);
-        if (list(wrapper) == null) {
+    public int deleteTrainingLogById(Long materialId) {
+        TblTrainingLog trainingLog = getById(materialId);
+        if (trainingLog == null) {
             return -1;
         }
-        remove(wrapper);
+        removeById(materialId);
+        return 1;
+    }
+
+    @Override
+    public int deleteTrainingLogByUsername(String username, Long materialId) {
+        UmsAdmin admin = adminService.getAdminByUsername(username);
+        TblTrainingLog trainingLog = getById(materialId);
+        if (trainingLog == null) {
+            return -1;
+        }
+        if (!trainingLog.getAdminId().equals(admin.getId())) {
+            return -2;
+        }
+        removeById(materialId);
         return 1;
     }
 

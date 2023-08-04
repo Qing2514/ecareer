@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -34,6 +35,61 @@ public class TblTrainingLogController {
     @Autowired
     private TblTrainingLogService trainingLogService;
 
+    @ApiOperation(value = "根据当前用户获取培训记录")
+    @GetMapping(value = "/user")
+    public CommonResult<List<TrainingLogVO>> getById(Principal principal) {
+        List<TrainingLogVO> trainingLog = trainingLogService.getTrainingLogByUsername(principal.getName());
+        return CommonResult.success(trainingLog);
+    }
+
+    @ApiOperation(value = "新增当前用户培训记录")
+    @PostMapping(value = "/user")
+    public CommonResult<Object> add(@Validated @RequestBody TblTrainingLogParam trainingLogParam,
+                                    Principal principal) {
+        int status = trainingLogService.addTrainingLog(principal.getName(), trainingLogParam);
+        if (status > 0) {
+            return CommonResult.success();
+        } else if (status == -1) {
+            return CommonResult.failed("用户不存在");
+        } else if (status == -2) {
+            return CommonResult.failed("资料不存在");
+        } else {
+            return CommonResult.failed();
+        }
+    }
+
+    @ApiOperation(value = "根据当前用户的培训记录ID删除培训记录")
+    @DeleteMapping(value = "/user/{materialId}")
+    public CommonResult<Object> delete(@PathVariable Long materialId, Principal principal) {
+        int status = trainingLogService.deleteTrainingLogByUsername(principal.getName(), materialId);
+        if (status > 0) {
+            return CommonResult.success();
+        } else if (status == -1) {
+            return CommonResult.failed("培训记录不存在");
+        } else if (status == -2) {
+            return CommonResult.failed("培训记录不属于该用户");
+        } else {
+            return CommonResult.failed();
+        }
+    }
+
+    @ApiOperation(value = "修改培训记录")
+    @PutMapping(value = "/user")
+    public CommonResult<Object> update(@RequestBody TblTrainingLog trainingLog) {
+        int status = trainingLogService.updateTrainingLog(trainingLog);
+        if (status > 0) {
+            return CommonResult.success();
+        } else if (status == -1) {
+            return CommonResult.failed("用户不存在");
+        } else if (status == -2) {
+            return CommonResult.failed("培训资料不存在");
+        } else if (status == -3) {
+            return CommonResult.failed("培训记录不存在");
+        } else {
+            return CommonResult.failed();
+        }
+    }
+
     @ApiOperation(value = "根据用户ID获取培训记录")
     @GetMapping(value = "/{id}")
     public CommonResult<List<TrainingLogVO>> getById(@PathVariable Long id) {
@@ -50,45 +106,13 @@ public class TblTrainingLogController {
         return CommonResult.success(CommonPage.restPage(trainingLogList));
     }
 
-    @ApiOperation(value = "新增培训记录")
-    @PostMapping(value = "")
-    public CommonResult<Object> add(@Validated @RequestBody TblTrainingLogParam trainingLogParam) {
-        int status = trainingLogService.addTrainingLog(trainingLogParam);
-        if (status > 0) {
-            return CommonResult.success();
-        } else if (status == -1) {
-            return CommonResult.failed("用户不存在");
-        } else if (status == -2) {
-            return CommonResult.failed("资料不存在");
-        } else {
-            return CommonResult.failed();
-        }
-    }
-
     @ApiOperation(value = "根据培训记录ID删除培训记录")
-    @DeleteMapping(value = "/{adminId}/{materialId}")
-    public CommonResult<Object> delete(@PathVariable Long adminId, @PathVariable Long materialId) {
-        int status = trainingLogService.deleteTrainingLog(adminId, materialId);
+    @DeleteMapping(value = "/{materialId}")
+    public CommonResult<Object> delete(@PathVariable Long materialId) {
+        int status = trainingLogService.deleteTrainingLogById(materialId);
         if (status > 0) {
             return CommonResult.success();
         } else if (status == -1) {
-            return CommonResult.failed("培训记录不存在");
-        } else {
-            return CommonResult.failed();
-        }
-    }
-
-    @ApiOperation(value = "修改培训记录")
-    @PutMapping(value = "")
-    public CommonResult<Object> update(@RequestBody TblTrainingLog trainingLog) {
-        int status = trainingLogService.updateTrainingLog(trainingLog);
-        if (status > 0) {
-            return CommonResult.success();
-        } else if (status == -1) {
-            return CommonResult.failed("用户不存在");
-        } else if (status == -2) {
-            return CommonResult.failed("培训资料不存在");
-        } else if (status == -3) {
             return CommonResult.failed("培训记录不存在");
         } else {
             return CommonResult.failed();

@@ -19,11 +19,18 @@ import java.util.List;
 public interface TblTrainingLogService extends IService<TblTrainingLog> {
 
     /**
-     * 根据培训记录ID获取培训记录
+     * 根据用户ID获取培训记录
      * @param id 用户ID
      * @return TblTrainingLog 培训记录列表
      */
     List<TrainingLogVO> getTrainingLogByUserId(Long id);
+
+    /**
+     * 根据用户名获取培训记录
+     * @param username 用户名
+     * @return TblTrainingLog 培训记录列表
+     */
+    List<TrainingLogVO> getTrainingLogByUsername(String username);
 
     /**
      * 根据所属培训记录名称或培训记录名称分页获取培训记录列表
@@ -36,18 +43,26 @@ public interface TblTrainingLogService extends IService<TblTrainingLog> {
 
     /**
      * 新增培训记录
+     * @param username 用户名
      * @param trainingLogParam 培训记录校验参数
      * @return int 成功标志
      */
-    int addTrainingLog(TblTrainingLogParam trainingLogParam);
+    int addTrainingLog(String username, TblTrainingLogParam trainingLogParam);
 
     /**
-     * 根据用户ID和培训记录ID删除培训记录
-     * @param adminId 用户ID
+     * 根据培训记录ID删除培训记录
      * @param materialId 培训资料ID
      * @return int 成功标志
      */
-    int deleteTrainingLog(Long adminId, Long materialId);
+    int deleteTrainingLogById(Long materialId);
+
+    /**
+     * 根据用户名和培训记录ID删除培训记录
+     * @param username 用户名
+     * @param materialId 培训资料ID
+     * @return int 成功标志
+     */
+    int deleteTrainingLogByUsername(String username, Long materialId);
 
     /**
      * 修改培训记录
