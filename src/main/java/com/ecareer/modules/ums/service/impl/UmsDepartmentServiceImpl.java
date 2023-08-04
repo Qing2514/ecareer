@@ -10,6 +10,7 @@ import com.ecareer.modules.ums.model.UmsAdmin;
 import com.ecareer.modules.ums.model.UmsDepartment;
 import com.ecareer.modules.ums.service.UmsAdminService;
 import com.ecareer.modules.ums.service.UmsDepartmentService;
+import com.ecareer.modules.ums.service.UmsPostService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,9 @@ public class UmsDepartmentServiceImpl extends ServiceImpl<UmsDepartmentMapper, U
 
     @Autowired
     private UmsAdminService adminService;
+
+    @Autowired
+    private UmsPostService postService;
 
     @Override
     public UmsDepartment getDepartmentById(Long id) {
@@ -77,6 +81,8 @@ public class UmsDepartmentServiceImpl extends ServiceImpl<UmsDepartmentMapper, U
         department.setUpdateTime(new Date());
         department.setDeleted(1);
         updateById(department);
+        // 删除该部门下的所有岗位
+        postService.deletePostByDepartmentId(id);
         return 1;
     }
 

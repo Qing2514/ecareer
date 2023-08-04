@@ -101,6 +101,15 @@ public class UmsPostServiceImpl extends ServiceImpl<UmsPostMapper, UmsPost> impl
     }
 
     @Override
+    public void deletePostByDepartmentId(Long departmentId) {
+        LambdaUpdateWrapper<UmsPost> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(UmsPost::getDepartmentId, departmentId)
+                .set(UmsPost::getUpdateTime, new Date())
+                .set(UmsPost::getDeleted, 1);
+        update(wrapper);
+    }
+
+    @Override
     public int updatePost(UmsPost post) {
         UmsPost oldPost = getPostById(post.getId());
         if (oldPost == null) {

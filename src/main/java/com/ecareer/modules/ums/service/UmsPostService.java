@@ -47,6 +47,12 @@ public interface UmsPostService extends IService<UmsPost> {
     int deletePost(Long id);
 
     /**
+     * 根据所属部门ID删除岗位
+     * @param departmentId 所属部门ID
+     */
+    void deletePostByDepartmentId(Long departmentId);
+
+    /**
      * 修改岗位
      * @param post 岗位
      * @return int 成功标志
