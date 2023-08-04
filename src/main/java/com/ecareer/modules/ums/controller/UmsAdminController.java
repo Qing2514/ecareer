@@ -154,10 +154,6 @@ public class UmsAdminController {
             return CommonResult.success();
         } else if (status == -1) {
             return CommonResult.failed("用户不存在");
-        } else if (status == -2) {
-            return CommonResult.failed("所属部门不存在");
-        } else if (status == -3) {
-            return CommonResult.failed("所属岗位不存在");
         } else {
             return CommonResult.failed();
         }
@@ -190,9 +186,13 @@ public class UmsAdminController {
     @RequestMapping(value = "", method = RequestMethod.PUT)
     @ResponseBody
     public CommonResult update(@RequestBody UmsAdmin admin) {
-        boolean success = adminService.update(admin);
-        if (success) {
+        int status = adminService.update(admin);
+        if (status > 0) {
             return CommonResult.success(null);
+        } else if (status == -1) {
+            return CommonResult.failed("用户不存在");
+        } else if (status == -2) {
+            return CommonResult.failed("岗位不存在");
         }
         return CommonResult.failed();
     }

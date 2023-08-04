@@ -43,12 +43,14 @@ public class UmsPostServiceImpl extends ServiceImpl<UmsPostMapper, UmsPost> impl
     public Page<UmsPost> getPage(String departmentName, String postName, Integer pageSize, Integer pageNum) {
         Page<UmsPost> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<UmsPost> postWrapper = new LambdaQueryWrapper<>();
+        postWrapper.eq(UmsPost::getDeleted, 0);
         if (StrUtil.isNotEmpty(postName)) {
-            postWrapper.like(UmsPost::getName, postName).eq(UmsPost::getDeleted, 0);
+            postWrapper.like(UmsPost::getName, postName);
         }
+        LambdaQueryWrapper<UmsDepartment> departmentWrapper = new LambdaQueryWrapper<>();
+        departmentWrapper.eq(UmsDepartment::getDeleted, 0);
         if (StrUtil.isNotEmpty(departmentName)) {
-            LambdaQueryWrapper<UmsDepartment> departmentWrapper = new LambdaQueryWrapper<>();
-            departmentWrapper.like(UmsDepartment::getName, departmentName).eq(UmsDepartment::getDeleted, 0);
+            departmentWrapper.like(UmsDepartment::getName, departmentName);
             List<UmsDepartment> departmentList = departmentService.list(departmentWrapper);
             Long departmentId = departmentList.get(0).getId();
             postWrapper.eq(UmsPost::getDepartmentId, departmentId);

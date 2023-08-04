@@ -191,7 +191,7 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
     }
 
     @Override
-    public boolean update(UmsAdmin admin) {
+    public int update(UmsAdmin admin) {
         UmsAdmin rawAdmin = getAdminByUsername(admin.getUsername());
         if (rawAdmin.getPassword().equals(admin.getPassword())) {
             //与原加密密码相同的不需要修改
@@ -205,8 +205,18 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
             }
         }
         admin.setId(rawAdmin.getId());
+        UmsPost post = postService.getPostById(admin.getPostId());
+        if (post == null) {
+            return -2;
+        }
+        post.setAdminNumber(post.getAdminNumber() + 1);
+        postService.updatePost(post);
+        UmsDepartment department = departmentService.getDepartmentById(post.getDepartmentId());
+        department.setAdminNumber(department.getAdminNumber() + 1);
+        departmentService.updateDepartment(department);
         getCacheService().delAdmin(admin.getId());
-        return updateById(admin);
+        updateById(admin);
+        return 1;
     }
 
     @Override
@@ -299,22 +309,9 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper, UmsAdmin> i
         if (admin == null) {
             return -1;
         }
-        UmsDepartment department = departmentService.getDepartmentById(adminBasicInfoParam.getDepartmentId());
-        LOGGER.info(department.getId().toString());
-        if (department == null) {
-            return -2;
-        }
-        UmsPost post = postService.getPostById(adminBasicInfoParam.getPostId());
-        if (post == null) {
-            return -3;
-        }
         BeanUtils.copyProperties(adminBasicInfoParam, admin);
         updateById(admin);
         getCacheService().delAdmin(admin.getId());
-        department.setAdminNumber(department.getAdminNumber() + 1);
-        departmentService.updateDepartment(department);
-        post.setAdminNumber(post.getAdminNumber() + 1);
-        postService.updatePost(post);
         return 1;
     }
 

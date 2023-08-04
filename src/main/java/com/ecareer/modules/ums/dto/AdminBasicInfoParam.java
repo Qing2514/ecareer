@@ -43,14 +43,6 @@ public class AdminBasicInfoParam {
     @ApiModelProperty(value = "个人简介")
     private String introduction;
 
-    @NotNull
-    @ApiModelProperty(value = "所属岗位ID", required = true)
-    private Long postId;
-
-    @NotNull
-    @ApiModelProperty(value = "所属部门ID", required = true)
-    private Long departmentId;
-
     @ApiModelProperty(value = "备注信息")
     private String note;
 

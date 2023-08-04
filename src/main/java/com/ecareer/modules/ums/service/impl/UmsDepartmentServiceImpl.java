@@ -41,8 +41,9 @@ public class UmsDepartmentServiceImpl extends ServiceImpl<UmsDepartmentMapper, U
     public Page<UmsDepartment> getPage(String departmentName, Integer pageSize, Integer pageNum) {
         Page<UmsDepartment> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<UmsDepartment> departmentWrapper = new LambdaQueryWrapper<>();
+        departmentWrapper.eq(UmsDepartment::getDeleted, 0);
         if (StrUtil.isNotEmpty(departmentName)) {
-            departmentWrapper.like(UmsDepartment::getName, departmentName).eq(UmsDepartment::getDeleted, 0);
+            departmentWrapper.like(UmsDepartment::getName, departmentName);
         }
         return page(page, departmentWrapper);
     }

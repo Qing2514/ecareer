@@ -62,8 +62,8 @@ public class UmsAdmin implements Serializable {
     @ApiModelProperty(value = "个人简介")
     private String introduction;
 
-    @ApiModelProperty(value = "所属部门ID")
-    private Long departmentId;
+    @ApiModelProperty(value = "所属岗位ID")
+    private Long postId;
 
     @ApiModelProperty(value = "备注信息")
     private String note;

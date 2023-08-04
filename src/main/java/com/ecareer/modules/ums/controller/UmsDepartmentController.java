@@ -38,7 +38,7 @@ public class UmsDepartmentController {
         return CommonResult.success(department);
     }
 
-    @ApiOperation(value = "根据所属部门名称或部门名称分页获取部门列表")
+    @ApiOperation(value = "根据部门名称分页获取部门列表")
     @GetMapping(value = "/user/getPage")
     public CommonResult<CommonPage<UmsDepartment>> getPage(@RequestParam(value = "departmentName", required = false) String departmentName,
                                                      @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
