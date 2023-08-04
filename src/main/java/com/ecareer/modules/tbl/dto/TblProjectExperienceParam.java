@@ -15,10 +15,6 @@ import java.util.Date;
 @Data
 public class TblProjectExperienceParam {
 
-    @NotNull
-    @ApiModelProperty(value = "用户ID", required = true)
-    private Long adminId;
-
     @NotEmpty
     @ApiModelProperty(value = "项目名称", required = true)
     private String name;

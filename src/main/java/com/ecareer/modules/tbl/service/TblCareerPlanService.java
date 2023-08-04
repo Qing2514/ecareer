@@ -18,7 +18,7 @@ import java.util.List;
 public interface TblCareerPlanService extends IService<TblCareerPlan> {
 
     /**
-     * 根据所属职业规划名称或职业规划名称分页获取职业规划列表
+     * 根据用户名获取职业规划
      * @param username 用户名
      * @return TblCareerPlan 职业规划
      */

@@ -25,6 +25,13 @@ public interface TblProjectExperienceService extends IService<TblProjectExperien
     List<TblProjectExperience> getProjectExperienceByUserId(Long id);
 
     /**
+     * 根据用户名获取项目经验
+     * @param username 用户名
+     * @return TblProjectExperience 项目经验信息
+     */
+    List<TblProjectExperience> getProjectExperienceByUsername(String username);
+
+    /**
      * 根据所属项目经验名称或项目经验名称分页获取项目经验列表
      * @param projectName 项目名称
      * @param pageSize 页大小
@@ -35,10 +42,11 @@ public interface TblProjectExperienceService extends IService<TblProjectExperien
 
     /**
      * 新增项目经验
+     * @param username 用户名
      * @param projectExperienceParam 项目经验校验参数
      * @return int 成功标志
      */
-    int addProjectExperience(TblProjectExperienceParam projectExperienceParam);
+    int addProjectExperience(String username, TblProjectExperienceParam projectExperienceParam);
 
     /**
      * 根据项目经验ID删除项目经验
@@ -46,6 +54,14 @@ public interface TblProjectExperienceService extends IService<TblProjectExperien
      * @return int 成功标志
      */
     int deleteProjectExperience(Long id);
+
+    /**
+     * 根据项目经验ID删除项目经验
+     * @param username 用户名
+     * @param id 项目经验ID
+     * @return int 成功标志
+     */
+    int deleteProjectExperience(String username, Long id);
 
     /**
      * 修改项目经验

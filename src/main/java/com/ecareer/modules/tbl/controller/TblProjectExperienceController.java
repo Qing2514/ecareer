@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -33,6 +34,64 @@ public class TblProjectExperienceController {
     @Autowired
     private TblProjectExperienceService projectExperienceService;
 
+    @ApiOperation(value = "根据当前用户获取项目经验")
+    @GetMapping(value = "/user")
+    public CommonResult<List<TblProjectExperience>> getById(Principal principal) {
+        List<TblProjectExperience> projectExperience =
+                projectExperienceService.getProjectExperienceByUsername(principal.getName());
+        return CommonResult.success(projectExperience);
+    }
+
+    @ApiOperation(value = "新增项目经验")
+    @PostMapping(value = "/user")
+    public CommonResult<Object> add(@Validated @RequestBody TblProjectExperienceParam projectExperienceParam,
+                                    Principal principal) {
+        int status = projectExperienceService.addProjectExperience(principal.getName(), projectExperienceParam);
+        if (status > 0) {
+            return CommonResult.success();
+        } else if (status == -1) {
+            return CommonResult.failed("用户不存在");
+        } else if (status == -2) {
+            return CommonResult.failed("岗位不存在");
+        } else if (status == -3) {
+            return CommonResult.failed("项目经验已存在");
+        } else {
+            return CommonResult.failed();
+        }
+    }
+
+    @ApiOperation(value = "根据当前用户的项目经验ID删除项目经验")
+    @DeleteMapping(value = "/user/{id}")
+    public CommonResult<Object> delete(@PathVariable Long id, Principal principal) {
+        int status = projectExperienceService.deleteProjectExperience(principal.getName(), id);
+        if (status > 0) {
+            return CommonResult.success();
+        } else if (status == -1) {
+            return CommonResult.failed("项目经验不存在");
+        } else if (status == -2) {
+            return CommonResult.failed("项目经验不属于该用户");
+        } else {
+            return CommonResult.failed();
+        }
+    }
+
+    @ApiOperation(value = "修改项目经验")
+    @PutMapping(value = "/user")
+    public CommonResult<Object> update(@RequestBody TblProjectExperience projectExperience) {
+        int status = projectExperienceService.updateProjectExperience(projectExperience);
+        if (status > 0) {
+            return CommonResult.success();
+        } else if (status == -1) {
+            return CommonResult.failed("项目经验不存在");
+        } else if (status == -2) {
+            return CommonResult.failed("用户不存在");
+        } else if (status == -3) {
+            return CommonResult.failed("岗位不存在");
+        } else {
+            return CommonResult.failed();
+        }
+    }
+
     @ApiOperation(value = "根据用户ID获取项目经验")
     @GetMapping(value = "/{id}")
     public CommonResult<List<TblProjectExperience>> getById(@PathVariable Long id) {
@@ -49,23 +108,6 @@ public class TblProjectExperienceController {
         return CommonResult.success(CommonPage.restPage(projectExperienceList));
     }
 
-    @ApiOperation(value = "新增项目经验")
-    @PostMapping(value = "")
-    public CommonResult<Object> add(@Validated @RequestBody TblProjectExperienceParam projectExperienceParam) {
-        int status = projectExperienceService.addProjectExperience(projectExperienceParam);
-        if (status > 0) {
-            return CommonResult.success();
-        } else if (status == -1) {
-            return CommonResult.failed("用户不存在");
-        } else if (status == -2) {
-            return CommonResult.failed("岗位不存在");
-        } else if (status == -3) {
-            return CommonResult.failed("项目经验已存在");
-        } else {
-            return CommonResult.failed();
-        }
-    }
-
     @ApiOperation(value = "根据项目经验ID删除项目经验")
     @DeleteMapping(value = "/{id}")
     public CommonResult<Object> delete(@PathVariable Long id) {
@@ -74,23 +116,6 @@ public class TblProjectExperienceController {
             return CommonResult.success();
         } else if (status == -1) {
             return CommonResult.failed("项目经验不存在");
-        } else {
-            return CommonResult.failed();
-        }
-    }
-
-    @ApiOperation(value = "修改项目经验")
-    @PutMapping(value = "")
-    public CommonResult<Object> update(@RequestBody TblProjectExperience projectExperience) {
-        int status = projectExperienceService.updateProjectExperience(projectExperience);
-        if (status > 0) {
-            return CommonResult.success();
-        } else if (status == -1) {
-            return CommonResult.failed("项目经验不存在");
-        } else if (status == -2) {
-            return CommonResult.failed("用户不存在");
-        } else if (status == -3) {
-            return CommonResult.failed("岗位不存在");
         } else {
             return CommonResult.failed();
         }

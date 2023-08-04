@@ -33,23 +33,17 @@ public class TblCareerPlanController {
     @Autowired
     private TblCareerPlanService careerPlanService;
 
-    @ApiOperation(value = "根据用户ID获取职业规划")
+    @ApiOperation(value = "根据当前用户获取职业规划")
     @GetMapping(value = "/user")
     public CommonResult<TblCareerPlan> getById(Principal principal) {
-        if (principal == null) {
-            return CommonResult.unauthorized(null);
-        }
         String username = principal.getName();
         TblCareerPlan careerPlan = careerPlanService.getByUsername(username);
         return CommonResult.success(careerPlan);
     }
 
-    @ApiOperation(value = "新增职业规划")
+    @ApiOperation(value = "新增当前用户职业规划")
     @PostMapping(value = "/user")
     public CommonResult<Object> add(@Validated @RequestBody TblCareerPlanParam careerPlanParam, Principal principal) {
-        if (principal == null) {
-            return CommonResult.unauthorized(null);
-        }
         String username = principal.getName();
         int status = careerPlanService.addCareerPlan(username, careerPlanParam);
         if (status > 0) {
@@ -63,12 +57,9 @@ public class TblCareerPlanController {
         }
     }
 
-    @ApiOperation(value = "根据职业规划ID删除职业规划")
+    @ApiOperation(value = "根据当前用户删除职业规划")
     @DeleteMapping(value = "/user")
     public CommonResult<Object> delete(Principal principal) {
-        if (principal == null) {
-            return CommonResult.unauthorized(null);
-        }
         String username = principal.getName();
         boolean flag = careerPlanService.deleteByUsername(username);
         if (flag) {

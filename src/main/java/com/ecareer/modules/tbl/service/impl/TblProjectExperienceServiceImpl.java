@@ -43,6 +43,12 @@ public class TblProjectExperienceServiceImpl extends ServiceImpl<TblProjectExper
     }
 
     @Override
+    public List<TblProjectExperience> getProjectExperienceByUsername(String username) {
+        UmsAdmin admin = adminService.getAdminByUsername(username);
+        return getProjectExperienceByUserId(admin.getId());
+    }
+
+    @Override
     public Page<TblProjectExperience> getPage(String projectName, Integer pageSize, Integer pageNum) {
         Page<TblProjectExperience> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<TblProjectExperience> projectExperienceWrapper = new LambdaQueryWrapper<>();
@@ -53,8 +59,8 @@ public class TblProjectExperienceServiceImpl extends ServiceImpl<TblProjectExper
     }
 
     @Override
-    public int addProjectExperience(TblProjectExperienceParam projectExperienceParam) {
-        UmsAdmin user = adminService.getAdminById(projectExperienceParam.getAdminId());
+    public int addProjectExperience(String username, TblProjectExperienceParam projectExperienceParam) {
+        UmsAdmin user = adminService.getAdminByUsername(username);
         if (user == null) {
             return -1;
         }
@@ -78,6 +84,20 @@ public class TblProjectExperienceServiceImpl extends ServiceImpl<TblProjectExper
         TblProjectExperience projectExperience = getById(id);
         if (projectExperience == null) {
             return -1;
+        }
+        removeById(id);
+        return 1;
+    }
+
+    @Override
+    public int deleteProjectExperience(String username, Long id) {
+        UmsAdmin admin = adminService.getAdminByUsername(username);
+        TblProjectExperience projectExperience = getById(id);
+        if (projectExperience == null) {
+            return -1;
+        }
+        if (!projectExperience.getAdminId().equals(admin.getId())) {
+            return -2;
         }
         removeById(id);
         return 1;
