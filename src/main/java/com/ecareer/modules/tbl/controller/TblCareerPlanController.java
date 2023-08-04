@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 /**
  * <p>
  * 职业规划表 前端控制器
@@ -32,23 +34,24 @@ public class TblCareerPlanController {
     private TblCareerPlanService careerPlanService;
 
     @ApiOperation(value = "根据用户ID获取职业规划")
-    @GetMapping(value = "/{id}")
-    public CommonResult<TblCareerPlan> getById(@PathVariable Long id) {
-        TblCareerPlan careerPlan = careerPlanService.getById(id);
+    @GetMapping(value = "/user")
+    public CommonResult<TblCareerPlan> getById(Principal principal) {
+        if (principal == null) {
+            return CommonResult.unauthorized(null);
+        }
+        String username = principal.getName();
+        TblCareerPlan careerPlan = careerPlanService.getByUsername(username);
         return CommonResult.success(careerPlan);
     }
 
-    @ApiOperation(value = "根据用户ID分页获取职业规划列表")
-    @GetMapping(value = "/getPage")
-    public CommonResult<CommonPage<TblCareerPlan>> getPage(@RequestParam(value = "adminId", required = false) Long adminId, @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        Page<TblCareerPlan> careerPlanList = careerPlanService.getPage(adminId, pageSize, pageNum);
-        return CommonResult.success(CommonPage.restPage(careerPlanList));
-    }
-
     @ApiOperation(value = "新增职业规划")
-    @PostMapping(value = "")
-    public CommonResult<Object> add(@Validated @RequestBody TblCareerPlanParam careerPlanParam) {
-        int status = careerPlanService.addCareerPlan(careerPlanParam);
+    @PostMapping(value = "/user")
+    public CommonResult<Object> add(@Validated @RequestBody TblCareerPlanParam careerPlanParam, Principal principal) {
+        if (principal == null) {
+            return CommonResult.unauthorized(null);
+        }
+        String username = principal.getName();
+        int status = careerPlanService.addCareerPlan(username, careerPlanParam);
         if (status > 0) {
             return CommonResult.success();
         } else if (status == -1) {
@@ -61,9 +64,13 @@ public class TblCareerPlanController {
     }
 
     @ApiOperation(value = "根据职业规划ID删除职业规划")
-    @DeleteMapping(value = "/{id}")
-    public CommonResult<Object> delete(@PathVariable Long id) {
-        boolean flag = careerPlanService.removeById(id);
+    @DeleteMapping(value = "/user")
+    public CommonResult<Object> delete(Principal principal) {
+        if (principal == null) {
+            return CommonResult.unauthorized(null);
+        }
+        String username = principal.getName();
+        boolean flag = careerPlanService.deleteByUsername(username);
         if (flag) {
             return CommonResult.success();
         } else {
@@ -72,7 +79,7 @@ public class TblCareerPlanController {
     }
 
     @ApiOperation(value = "修改职业规划")
-    @PutMapping(value = "")
+    @PutMapping(value = "/user")
     public CommonResult<Object> update(@RequestBody TblCareerPlan careerPlan) {
         int status = careerPlanService.updateCareerPlan(careerPlan);
         if (status > 0) {
@@ -81,6 +88,31 @@ public class TblCareerPlanController {
             return CommonResult.failed("职业规划不存在");
         } else if (status == -2) {
             return CommonResult.failed("用户不存在");
+        } else {
+            return CommonResult.failed();
+        }
+    }
+
+    @ApiOperation(value = "根据用户ID分页获取职业规划列表")
+    @GetMapping(value = "/getPage")
+    public CommonResult<CommonPage<TblCareerPlan>> getPage(@RequestParam(value = "adminId", required = false) Long adminId, @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        Page<TblCareerPlan> careerPlanList = careerPlanService.getPage(adminId, pageSize, pageNum);
+        return CommonResult.success(CommonPage.restPage(careerPlanList));
+    }
+
+    @ApiOperation(value = "根据用户ID获取职业规划")
+    @GetMapping(value = "/{id}")
+    public CommonResult<TblCareerPlan> getById(@PathVariable Long id) {
+        TblCareerPlan careerPlan = careerPlanService.getById(id);
+        return CommonResult.success(careerPlan);
+    }
+
+    @ApiOperation(value = "根据职业规划ID删除职业规划")
+    @DeleteMapping(value = "/{id}")
+    public CommonResult<Object> delete(@PathVariable Long id) {
+        boolean flag = careerPlanService.removeById(id);
+        if (flag) {
+            return CommonResult.success();
         } else {
             return CommonResult.failed();
         }

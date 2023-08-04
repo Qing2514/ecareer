@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -30,6 +31,12 @@ public class TblCareerPlanServiceImpl extends ServiceImpl<TblCareerPlanMapper, T
     private UmsAdminService adminService;
 
     @Override
+    public TblCareerPlan getByUsername(String username) {
+        UmsAdmin admin = adminService.getAdminByUsername(username);
+        return getById(admin.getId());
+    }
+
+    @Override
     public Page<TblCareerPlan> getPage(Long adminId, Integer pageSize, Integer pageNum) {
         Page<TblCareerPlan> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<TblCareerPlan> careerPlanWrapper = new LambdaQueryWrapper<>();
@@ -40,13 +47,13 @@ public class TblCareerPlanServiceImpl extends ServiceImpl<TblCareerPlanMapper, T
     }
 
     @Override
-    public int addCareerPlan(TblCareerPlanParam careerPlanParam) {
-        UmsAdmin user = adminService.getAdminById(careerPlanParam.getAdminId());
+    public int addCareerPlan(String username, TblCareerPlanParam careerPlanParam) {
+        UmsAdmin user = adminService.getAdminByUsername(username);
         if (user == null) {
             return -1;
         }
         LambdaQueryWrapper<TblCareerPlan> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(TblCareerPlan::getAdminId, careerPlanParam.getAdminId());
+        wrapper.eq(TblCareerPlan::getAdminId, user.getId());
         TblCareerPlan careerPlan = getOne(wrapper);
         if (careerPlan != null) {
             return -2;
@@ -56,6 +63,12 @@ public class TblCareerPlanServiceImpl extends ServiceImpl<TblCareerPlanMapper, T
         careerPlan.setCreateTime(new Date());
         save(careerPlan);
         return 1;
+    }
+
+    @Override
+    public boolean deleteByUsername(String username) {
+        UmsAdmin admin = adminService.getAdminByUsername(username);
+        return removeById(admin.getId());
     }
 
     @Override

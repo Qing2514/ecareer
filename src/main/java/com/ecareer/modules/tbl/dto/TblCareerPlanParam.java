@@ -15,10 +15,6 @@ import java.util.Date;
 @Data
 public class TblCareerPlanParam {
 
-    @NotNull
-    @ApiModelProperty(value = "用户ID", required = true)
-    private Long adminId;
-
     @NotEmpty
     @ApiModelProperty(value = "短期时间", required = true)
     private String shortTime;
