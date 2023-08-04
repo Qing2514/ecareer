@@ -19,11 +19,18 @@ import java.util.List;
 public interface TblPromotionRecordService extends IService<TblPromotionRecord> {
 
     /**
-     * 根据晋升记录ID获取晋升记录
+     * 根据用户ID获取晋升记录
      * @param id 用户ID
      * @return TblPromotionRecord 晋升记录信息
      */
     List<PromotionRecordVO> getPromotionRecordByUserId(Long id);
+
+    /**
+     * 根据用户名获取晋升记录
+     * @param username 用户名
+     * @return TblPromotionRecord 晋升记录信息
+     */
+    List<PromotionRecordVO> getPromotionRecordByUsername(String username);
 
     /**
      * 根据所属晋升记录名称或晋升记录名称分页获取晋升记录列表
@@ -36,17 +43,26 @@ public interface TblPromotionRecordService extends IService<TblPromotionRecord> 
 
     /**
      * 新增晋升记录
+     * @param username 用户名
      * @param promotionRecordParam 晋升记录校验参数
      * @return int 成功标志
      */
-    int addPromotionRecord(TblPromotionRecordParam promotionRecordParam);
+    int addPromotionRecord(String username, TblPromotionRecordParam promotionRecordParam);
 
     /**
      * 根据晋升记录ID删除晋升记录
      * @param id 晋升记录ID
      * @return int 成功标志
      */
-    int deletePromotionRecord(Long id);
+    int deletePromotionRecordById(Long id);
+
+    /**
+     * 根据用户名和晋升记录ID删除晋升记录
+     * @param username 用户名
+     * @param id 晋升记录ID
+     * @return int 成功标志
+     */
+    int deletePromotionRecordByUsername(String username, Long id);
 
     /**
      * 修改晋升记录

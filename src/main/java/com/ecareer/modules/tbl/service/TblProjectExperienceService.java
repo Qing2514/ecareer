@@ -53,7 +53,7 @@ public interface TblProjectExperienceService extends IService<TblProjectExperien
      * @param id 项目经验ID
      * @return int 成功标志
      */
-    int deleteProjectExperience(Long id);
+    int deleteProjectExperienceById(Long id);
 
     /**
      * 根据项目经验ID删除项目经验
@@ -61,7 +61,7 @@ public interface TblProjectExperienceService extends IService<TblProjectExperien
      * @param id 项目经验ID
      * @return int 成功标志
      */
-    int deleteProjectExperience(String username, Long id);
+    int deleteProjectExperienceByUsername(String username, Long id);
 
     /**
      * 修改项目经验

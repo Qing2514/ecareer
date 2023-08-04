@@ -54,6 +54,12 @@ public class TblPromotionRecordServiceImpl extends ServiceImpl<TblPromotionRecor
     }
 
     @Override
+    public List<PromotionRecordVO> getPromotionRecordByUsername(String username) {
+        UmsAdmin admin = adminService.getAdminByUsername(username);
+        return getPromotionRecordByUserId(admin.getId());
+    }
+
+    @Override
     public Page<PromotionRecordVO> getPage(Long adminId, Integer pageSize, Integer pageNum) {
         Page<PromotionRecordVO> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<TblPromotionRecord> wrapper = new LambdaQueryWrapper<>();
@@ -69,8 +75,8 @@ public class TblPromotionRecordServiceImpl extends ServiceImpl<TblPromotionRecor
     }
 
     @Override
-    public int addPromotionRecord(TblPromotionRecordParam promotionRecordParam) {
-        UmsAdmin user = adminService.getAdminById(promotionRecordParam.getAdminId());
+    public int addPromotionRecord(String username, TblPromotionRecordParam promotionRecordParam) {
+        UmsAdmin user = adminService.getAdminByUsername(username);
         if (user == null) {
             return -1;
         }
@@ -104,10 +110,24 @@ public class TblPromotionRecordServiceImpl extends ServiceImpl<TblPromotionRecor
     }
 
     @Override
-    public int deletePromotionRecord(Long id) {
+    public int deletePromotionRecordById(Long id) {
         TblPromotionRecord promotionRecord = getById(id);
         if (promotionRecord == null) {
             return -1;
+        }
+        removeById(id);
+        return 1;
+    }
+
+    @Override
+    public int deletePromotionRecordByUsername(String username, Long id) {
+        UmsAdmin admin = adminService.getAdminByUsername(username);
+        TblPromotionRecord promotionRecord = getById(id);
+        if (promotionRecord == null) {
+            return -1;
+        }
+        if (!promotionRecord.getAdminId().equals(admin.getId())) {
+            return -2;
         }
         removeById(id);
         return 1;

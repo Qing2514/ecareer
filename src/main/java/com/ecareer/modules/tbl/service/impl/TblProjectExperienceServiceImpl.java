@@ -80,7 +80,7 @@ public class TblProjectExperienceServiceImpl extends ServiceImpl<TblProjectExper
     }
 
     @Override
-    public int deleteProjectExperience(Long id) {
+    public int deleteProjectExperienceById(Long id) {
         TblProjectExperience projectExperience = getById(id);
         if (projectExperience == null) {
             return -1;
@@ -90,7 +90,7 @@ public class TblProjectExperienceServiceImpl extends ServiceImpl<TblProjectExper
     }
 
     @Override
-    public int deleteProjectExperience(String username, Long id) {
+    public int deleteProjectExperienceByUsername(String username, Long id) {
         UmsAdmin admin = adminService.getAdminByUsername(username);
         TblProjectExperience projectExperience = getById(id);
         if (projectExperience == null) {

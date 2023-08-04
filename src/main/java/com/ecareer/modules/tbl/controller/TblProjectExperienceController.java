@@ -42,7 +42,7 @@ public class TblProjectExperienceController {
         return CommonResult.success(projectExperience);
     }
 
-    @ApiOperation(value = "新增项目经验")
+    @ApiOperation(value = "新增当前用户项目经验")
     @PostMapping(value = "/user")
     public CommonResult<Object> add(@Validated @RequestBody TblProjectExperienceParam projectExperienceParam,
                                     Principal principal) {
@@ -63,7 +63,7 @@ public class TblProjectExperienceController {
     @ApiOperation(value = "根据当前用户的项目经验ID删除项目经验")
     @DeleteMapping(value = "/user/{id}")
     public CommonResult<Object> delete(@PathVariable Long id, Principal principal) {
-        int status = projectExperienceService.deleteProjectExperience(principal.getName(), id);
+        int status = projectExperienceService.deleteProjectExperienceByUsername(principal.getName(), id);
         if (status > 0) {
             return CommonResult.success();
         } else if (status == -1) {
@@ -111,7 +111,7 @@ public class TblProjectExperienceController {
     @ApiOperation(value = "根据项目经验ID删除项目经验")
     @DeleteMapping(value = "/{id}")
     public CommonResult<Object> delete(@PathVariable Long id) {
-        int status = projectExperienceService.deleteProjectExperience(id);
+        int status = projectExperienceService.deleteProjectExperienceById(id);
         if (status > 0) {
             return CommonResult.success();
         } else if (status == -1) {
