@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ecareer.modules.tbl.dto.TblMaterialParam;
 import com.ecareer.modules.tbl.model.TblMaterial;
+import com.ecareer.modules.tbl.model.TblMaterialCourse;
+import com.ecareer.modules.tbl.model.TblMaterialSubject;
+import com.ecareer.modules.tbl.model.TblMaterialType;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -33,6 +36,33 @@ public interface TblMaterialService extends IService<TblMaterial> {
      * @return Page<TblMaterial> 培训资料页面
      */
     Page<TblMaterial> getPage(Long typeId, Long courseId, Long subjectId, Integer pageSize, Integer pageNum);
+
+    /**
+     * 分页获取职业测评类型
+     * @param typeId 类型ID
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @return Page<TblMaterialType> 培训资料类型
+     */
+    Page<TblMaterialType> getTypePage(Long typeId, Integer pageSize, Integer pageNum);
+
+    /**
+     * 分页获取职业测评所属课程
+     * @param courseId 课程ID
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @return Page<TblMaterialCourse> 培训资料所属课程
+     */
+    Page<TblMaterialCourse> getCoursePage(Long courseId, Integer pageSize, Integer pageNum);
+
+    /**
+     * 分页获取职业测评所属学科
+     * @param subjectId 学科ID
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @return Page<TblMaterialSubject> 培训资料所属学科
+     */
+    Page<TblMaterialSubject> getSubjectPage(Long subjectId, Integer pageSize, Integer pageNum);
 
     /**
      * 新增培训资料

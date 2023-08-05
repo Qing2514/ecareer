@@ -86,6 +86,36 @@ public class TblMaterialServiceImpl extends ServiceImpl<TblMaterialMapper, TblMa
     }
 
     @Override
+    public Page<TblMaterialType> getTypePage(Long typeId, Integer pageSize, Integer pageNum) {
+        Page<TblMaterialType> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<TblMaterialType> wrapper = new LambdaQueryWrapper<>();
+        if (typeId != null) {
+            wrapper.eq(TblMaterialType::getId, typeId);
+        }
+        return materialTypeService.page(page, wrapper);
+    }
+
+    @Override
+    public Page<TblMaterialCourse> getCoursePage(Long courseId, Integer pageSize, Integer pageNum) {
+        Page<TblMaterialCourse> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<TblMaterialCourse> wrapper = new LambdaQueryWrapper<>();
+        if (courseId != null) {
+            wrapper.eq(TblMaterialCourse::getId, courseId);
+        }
+        return materialCourseService.page(page, wrapper);
+    }
+
+    @Override
+    public Page<TblMaterialSubject> getSubjectPage(Long subjectId, Integer pageSize, Integer pageNum) {
+        Page<TblMaterialSubject> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<TblMaterialSubject> wrapper = new LambdaQueryWrapper<>();
+        if (subjectId != null) {
+            wrapper.eq(TblMaterialSubject::getId, subjectId);
+        }
+        return materialSubjectService.page(page, wrapper);
+    }
+
+    @Override
     public int addMaterial(TblMaterialParam materialParam, MultipartFile file) {
         TblMaterialType materialType = materialTypeService.getById(materialParam.getTypeId());
         if (materialType == null) {

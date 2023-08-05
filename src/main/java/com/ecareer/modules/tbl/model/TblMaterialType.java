@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,8 +18,7 @@ import lombok.Setter;
  * @author Qing2514
  * @since 2023-07-21
  */
-@Getter
-@Setter
+@Data
 @TableName("tbl_materials_type")
 @ApiModel(value = "TblMaterialsType对象", description = "培训资料类型表")
 public class TblMaterialType implements Serializable {
@@ -31,6 +31,5 @@ public class TblMaterialType implements Serializable {
 
     @ApiModelProperty("类型名称（文本、视频）")
     private String name;
-
 
 }

@@ -6,6 +6,9 @@ import com.ecareer.common.api.CommonPage;
 import com.ecareer.common.api.CommonResult;
 import com.ecareer.modules.tbl.dto.TblMaterialParam;
 import com.ecareer.modules.tbl.model.TblMaterial;
+import com.ecareer.modules.tbl.model.TblMaterialCourse;
+import com.ecareer.modules.tbl.model.TblMaterialSubject;
+import com.ecareer.modules.tbl.model.TblMaterialType;
 import com.ecareer.modules.tbl.service.TblMaterialCourseService;
 import com.ecareer.modules.tbl.service.TblMaterialService;
 import com.ecareer.modules.tbl.service.TblMaterialSubjectService;
@@ -61,15 +64,43 @@ public class TblMaterialController {
         return CommonResult.success(CommonPage.restPage(materialList));
     }
 
+    @ApiOperation(value = "分页获取培训资料类型")
+    @GetMapping(value = "/user/type/getPage")
+    public CommonResult<CommonPage<TblMaterialType>> getTypePage(
+            @RequestParam(value = "typeId", required = false) Long typeId,
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        Page<TblMaterialType> typeList = materialService.getTypePage(typeId, pageSize, pageNum);
+        return CommonResult.success(CommonPage.restPage(typeList));
+    }
+
+    @ApiOperation(value = "分页获取培训资料所属课程")
+    @GetMapping(value = "/user/course/getPage")
+    public CommonResult<CommonPage<TblMaterialCourse>> getCoursePage(
+            @RequestParam(value = "courseId", required = false) Long courseId,
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        Page<TblMaterialCourse> courseList = materialService.getCoursePage(courseId, pageSize, pageNum);
+        return CommonResult.success(CommonPage.restPage(courseList));
+    }
+
+    @ApiOperation(value = "分页获取培训资料所属学科")
+    @GetMapping(value = "/user/subject/getPage")
+    public CommonResult<CommonPage<TblMaterialSubject>> getSubjectPage(
+            @RequestParam(value = "subjectId", required = false) Long subjectId,
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        Page<TblMaterialSubject> subjectList = materialService.getSubjectPage(subjectId, pageSize, pageNum);
+        return CommonResult.success(CommonPage.restPage(subjectList));
+    }
+
     @ApiOperation(value = "上传培训资料")
     @PostMapping(value = "/{adminId}/{typeId}/{courseId}/{subjectId}")
     public CommonResult<Object> upload(@RequestParam("file") MultipartFile file,
                                        @PathVariable("adminId") Long adminId,
                                        @PathVariable("typeId") Long typeId,
                                        @PathVariable("courseId") Long courseId,
-                                       @PathVariable("subjectId") Long subjectId
-                                       // @Validated @RequestBody TblMaterialParam materialParam
-                                       ) {
+                                       @PathVariable("subjectId") Long subjectId) {
         TblMaterialParam materialParam = new TblMaterialParam(adminId, typeId, courseId, subjectId);
         int status = materialService.addMaterial(materialParam, file);
         if (status > 0) {
